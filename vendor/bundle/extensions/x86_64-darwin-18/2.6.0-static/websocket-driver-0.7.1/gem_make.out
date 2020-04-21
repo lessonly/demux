@@ -1,0 +1,15 @@
+current directory: /Users/rossreinhardt/dev/demux/vendor/bundle/gems/websocket-driver-0.7.1/ext/websocket-driver
+/Users/rossreinhardt/.asdf/installs/ruby/2.6.5/bin/ruby -I /Users/rossreinhardt/.asdf/installs/ruby/2.6.5/lib/ruby/2.6.0 -r ./siteconf20200421-7626-1400cxj.rb extconf.rb
+creating Makefile
+
+current directory: /Users/rossreinhardt/dev/demux/vendor/bundle/gems/websocket-driver-0.7.1/ext/websocket-driver
+make "DESTDIR=" clean
+
+current directory: /Users/rossreinhardt/dev/demux/vendor/bundle/gems/websocket-driver-0.7.1/ext/websocket-driver
+make "DESTDIR="
+compiling websocket_mask.c
+linking shared-object websocket_mask.bundle
+
+current directory: /Users/rossreinhardt/dev/demux/vendor/bundle/gems/websocket-driver-0.7.1/ext/websocket-driver
+make "DESTDIR=" install
+/usr/local/bin/ginstall -c -m 0755 websocket_mask.bundle ./.gem.20200421-7626-i77xhw
