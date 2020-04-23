@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: First Cool App
+  description: An app to change your life
+  secret: secrettokenone
+  entry_url: http://oneapp.example.com/connection/new
+
+two:
+  name: MyString
+  description: MyText
+  secret: secrettokentwo
+  entry_url: MyString
