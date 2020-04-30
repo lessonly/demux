@@ -1,0 +1,11 @@
+language: ruby
+cache: bundler
+rvm:
+  - 2.6
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database demux_dummy_test;' -U postgres
+  - bin/rails db:migrate RAILS_ENV=test
+before_install:
+  - gem install bundler
