@@ -14,6 +14,10 @@ Gem::Specification.new do |spec|
   spec.description = "Configure your application to send signals to a constellation of other 'apps'"
   spec.license     = "MIT"
 
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "https://github.com/rreinhardt9/demux/CHANGELOG.md"
+
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   spec.add_dependency "jwt", ">= 1.5", "< 3"
