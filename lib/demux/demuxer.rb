@@ -15,13 +15,48 @@ module Demux
       @signal_class = @signal_attributes.signal_class
     end
 
-    def send_to_apps
-      queue_transmissions
+    # Called by signal to resolve transmissions.
+    #
+    # If you are implementing a custom demuxer, you can override this method
+    # to provide your own implementation as long as you ultimately call
+    # `#resolve_now` in your new implementation.
+    #
+    # @return [self]
 
-      queued_transmissions.each(&:transmit)
+    def resolve
+      resolve_now
 
       self
     end
+
+    # Called by the implementation of #resolve to immediately resolve
+    # transmissions from a signal.
+    #
+    # @return [self]
+
+    def resolve_now
+      queue_transmissions
+
+      queued_transmissions.each do |transmission|
+        transmit(transmission)
+      end
+
+      self
+    end
+
+    # Called in `#resolve_now` when a resolved transmission is ready to be
+    # transmitted. You can override this in a custom demuxer as long as you
+    # ultimately call `#transmit` on the transmission.
+    #
+    # @return [self]
+
+    def transmit(transmission)
+      transmission.transmit
+
+      self
+    end
+
+    private
 
     def queued_transmissions
       Transmission
@@ -30,17 +65,17 @@ module Demux
         .where(uniqueness_hash: @signal_attributes.hashed)
     end
 
+    def queue_transmissions
+      listening_apps.transmission_requested_all(@signal_attributes)
+
+      self
+    end
+
     def listening_apps
       Demux::App.listening_for(
         signal_name: @signal_class.constantize.signal_name,
         account_id: @account_id
       )
-    end
-
-    def queue_transmissions
-      listening_apps.transmission_requested_all(@signal_attributes)
-
-      self
     end
   end
 end
