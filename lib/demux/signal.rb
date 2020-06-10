@@ -47,7 +47,7 @@ module Demux
           object_id: @object_id,
           signal_class: self.class.name
         )
-      ).send_to_apps
+      ).resolve
 
       self
     end
