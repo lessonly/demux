@@ -3,9 +3,11 @@
 require "net/http"
 
 module Demux
-  # Transmit a Transmission
+  # Transmits a Transmission
   class Transmitter
+    # @return [TransmissionReceipt] results of the transmission attempt
     attr_reader :receipt
+
     # Constructor
     #
     # @param transmission [Demux::Transmission] the transmission to be sent
@@ -16,6 +18,9 @@ module Demux
       @transmission = transmission
       @uri = URI(@transmission.request_url)
       @receipt = NullTransmissionReceipt.new
+      @request = NullRequest.new
+      @response = NullResponse.new
+      @timeout = Demux.config.signal_timeout
     end
 
     # Use the transmitter to send it's transmission
@@ -27,7 +32,7 @@ module Demux
 
       send_request
 
-      @receipt = TransmissionReceipt.new(@request, @response)
+      write_receipt
 
       log_transmission
 
@@ -48,9 +53,30 @@ module Demux
 
     def send_request
       @response =
-        Net::HTTP.start(@uri.hostname, @uri.port, use_ssl: true) do |http|
+        Net::HTTP.start(@uri.hostname, @uri.port, **request_options) do |http|
           http.request(@request)
         end
+
+      self
+    rescue Net::ReadTimeout, Net::OpenTimeout, Net::WriteTimeout
+      @status = :timeout
+    end
+
+    def request_options
+      {
+        use_ssl: @uri.scheme == "https",
+        open_timeout: @timeout,
+        write_timeout: @timeout,
+        read_timeout: @timeout
+      }
+    end
+
+    def write_receipt
+      @receipt = TransmissionReceipt.new(
+        request: @request,
+        response: @response,
+        status: status
+      )
     end
 
     def log_transmission
@@ -60,14 +86,14 @@ module Demux
             with payload #{@transmission.request_body}"
       )
     end
+
+    def status
+      @status ||= @response.is_a?(Net::HTTPSuccess) ? :success : :failure
+    end
   end
 
   # Null object to represent having no receipt
   class NullTransmissionReceipt
-    def success?
-      nil
-    end
-
     def http_code
       nil
     end
@@ -85,27 +111,46 @@ module Demux
     end
   end
 
+  # Null object for missing request
+  class NullRequest
+    def each_header
+      []
+    end
+
+    def body
+      ""
+    end
+  end
+
+  # Null object for missing response
+  class NullResponse
+    def code
+      nil
+    end
+
+    def body
+      ""
+    end
+  end
+
   # Returned when the Transmitter transmits
   # @see Demux::Transmitter
   class TransmissionReceipt
-    def initialize(request, response)
+    attr_reader :status
+
+    def initialize(request:, response:, status:)
       @raw_request = request
       @raw_response = response
-    end
-
-    # Was the response code 2xx
-    #
-    # @return [Boolean]
-
-    def success?
-      @raw_response.is_a?(Net::HTTPSuccess)
+      @status = status
     end
 
     # HTTP code of response
     #
-    # @return [Integer] http code
+    # @return [Integer, nil] http code. nil if there is no response
 
     def http_code
+      return unless @raw_response.code
+
       Integer(@raw_response.code)
     end
 

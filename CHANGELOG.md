@@ -1,6 +1,7 @@
 # Upcoming
 
-Nothing yet
+- [Make it easier to override the Demuxer](https://github.com/rreinhardt9/demux/pull/4/commits/970a0005125587368c837752820113a94b85292c)
+- [Add the ability to configure a timeout duration](https://github.com/rreinhardt9/demux/pull/9) for sending a signal and set it to 10 seconds by default
 
 # 0.1.0.beta / 5-29-2020
 

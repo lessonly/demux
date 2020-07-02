@@ -8,9 +8,11 @@ require "demux/transmitter"
 
 # Demux toplevel namespace
 module Demux
-  # Access the current configuration
-
   module_function
+
+  class Error < StandardError; end
+
+  # Access the current configuration
 
   def configuration
     @configuration ||= Configuration.new
@@ -40,10 +42,16 @@ module Demux
   # Configuration holds the current configuration for the SeisimicAPI
   # and provides defaults
   class Configuration
+    # return [#resolve] (Demux::Demuxer) object called to resolve a signal
+    #   to apps
     attr_accessor :default_demuxer
+
+    # @return [Integer] (10) time in seconds before transmitter will timeout
+    attr_accessor :signal_timeout
 
     def initialize(args = {})
       @default_demuxer = args.fetch(:default_demuxer) { Demux::Demuxer }
+      @signal_timeout = args.fetch(:signal_timeout, 10)
     end
   end
 end
