@@ -7,7 +7,7 @@ module Demux
 
     before_save :update_uniqueness_hash
 
-    enum status: %i[queued sending success failure]
+    enum status: %i[queued sending success failure timeout]
 
     class << self
       def for_app(app_relation)
@@ -37,7 +37,7 @@ module Demux
 
     def save_receipt(receipt)
       update(
-        status: receipt.success? ? :success : :failure,
+        status: receipt.status,
         response_code: receipt.http_code,
         response_body: receipt.response_body,
         request_headers: receipt.request_headers
