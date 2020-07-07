@@ -204,6 +204,8 @@ $ gem install demux
 ```
 
 ## Contributing
+Please consider starting a conversation in an issue before putting time into a PR to make sure the change tracks with the vision for the project.
+
 After cloning repo:
 
 - install gems `bundle install`
@@ -211,6 +213,16 @@ After cloning repo:
 - If you run into trouble setting up databases because of a missing postgres role, you can create one by running `psql` and then running `ALTER ROLE postgres LOGIN CREATEDB;`
 - If you cannot start `psql` because you are missing a database named after your local user, you can create one using `createdb`
 - You should not be able to run the tests `bundle exec rake`
+
+Please squash the code in your PR down into a commit with a sensible message before requesting review (or after making updates based on review).
+
+Here are some tips on good commit messages:
+[Thoughtbot](https://thoughtbot.com/blog/5-useful-tips-for-a-better-commit-message)
+[Tim Pope](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
+
+## Current Maintainers
+
+- Ross @rreinhardt9
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
