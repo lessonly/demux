@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/rreinhardt9/demux.svg?branch=master)](https://travis-ci.com/rreinhardt9/demux)
+[![Build Status](https://travis-ci.com/lessonly/demux.svg?branch=master)](https://travis-ci.com/lessonly/demux)
 
 # Demux
 
