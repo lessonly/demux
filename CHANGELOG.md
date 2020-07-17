@@ -5,6 +5,7 @@
 - [Add method for purging old transmissions](https://github.com/lessonly/demux/pull/13) This can be called periodically in the method of your choosing to remove old transmissions.
 - [Add ability to pass context to signals and use an object not just an ID for the object](https://github.com/lessonly/demux/pull/15). Important! This requires you to create your own migration to upgrade if you've run the migrations from Demux before.
 - [Add ability to pass extra data in token payload for Demux::Connection#entry_url](https://github.com/lessonly/demux/pull/18)
+- [Change how signal attributes are referenced in custom demuxer](https://github.com/lessonly/demux/pull/14) This will require you to update your custom demuxer if you have one.
 
 # 0.1.0.beta / 5-29-2020
 

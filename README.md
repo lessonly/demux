@@ -291,7 +291,7 @@ Lets say we want to create a demuxer that asynchronously resolve the signal and 
 class AsyncDemuxer < Demux::Demuxer
   def resolve
     # Job to resolve signal. In that job we call #resolve_now
-    DemuxResolverJob.perform(@signal_attributes)
+    DemuxResolverJob.perform(demuxer_arguments)
 
     self
   end
@@ -306,9 +306,9 @@ class AsyncDemuxer < Demux::Demuxer
 end
 
 class DemuxResolverJob
-  def perform(signal_attributes)
+  def perform(demuxer_arguments)
     # Here is an example of calling `resolve_now` in the job
-    AsyncDemuxer.new(signal_attributes).resolve_now
+    AsyncDemuxer.new(**demuxer_arguments).resolve_now
   end
 end
 

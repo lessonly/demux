@@ -50,13 +50,11 @@ module Demux
 
     def send(action, context: {})
       @demuxer.new(
-        SignalAttributes.new(
-          account_id: @account_id,
-          action: String(action),
-          object_id: @object_id,
-          context: @context.merge(context),
-          signal_class: self.class.name
-        )
+        account_id: @account_id,
+        action: String(action),
+        object_id: @object_id,
+        context: @context.merge(context),
+        signal_class: self.class.name
       ).resolve
 
       self
