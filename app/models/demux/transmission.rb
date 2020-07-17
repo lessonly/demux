@@ -19,6 +19,18 @@ module Demux
       rescue ActiveRecord::RecordNotUnique
         # Unique index by status/uniqueness_hash
       end
+
+      # Purge old transmissions
+      #
+      # @param older_then [String, #to_s] updated_at date before which to
+      #   purge. It should be a valid datetime string or an
+      #   object that returns one when to_s is called on it.
+      #
+      # @return [self]
+
+      def purge(older_then:)
+        where("updated_at < ?", older_then).destroy_all
+      end
     end
 
     def transmit

@@ -186,6 +186,14 @@ Demux.configure do |config|
 end
 ```
 
+#### Purging Old Signals
+
+Since we are creating new transmissions all the time, the demux_transmissions table has the potential to get very large. You will very likely want to set up a job to purge old transmissions periodically. For this you can use the `Demux::Transmission#purge` method and call it using the task scheduling method of your choosing. For example, you could set up a job that runs every night and purges transmissions older than a month using the following call:
+
+```Ruby
+Demux::Transmissions.purge(older_then: 1.month.ago)
+```
+
 ## Installation
 Add this line to your application's Gemfile:
 
