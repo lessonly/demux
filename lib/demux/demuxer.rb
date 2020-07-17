@@ -9,8 +9,17 @@ module Demux
   # background queue and can supply their own demuxer with details on how that
   # should happen.
   class Demuxer
-    def initialize(signal_attributes)
-      @signal_attributes = signal_attributes
+    # Return the agruments that will be needed to re-initialize a custom
+    # demuxer. These might be used to pass to a job in which the custom demuxer
+    # would call resolve_now
+    #
+    # @returns [Hash] hash representing the signal_attributes for initializing
+    # the demuxer
+    attr_reader :demuxer_arguments
+
+    def initialize(**args)
+      @demuxer_arguments = args
+      @signal_attributes = SignalAttributes.new(**@demuxer_arguments)
       @account_id = @signal_attributes.account_id
       @signal_class = @signal_attributes.signal_class
     end
