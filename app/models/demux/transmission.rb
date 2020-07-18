@@ -76,7 +76,7 @@ module Demux
 
     def signal
       @signal ||= signal_class.constantize.new(
-        object_id, account_id: account_id
+        object_id, account_id: account_id, context: context
       )
     end
 
