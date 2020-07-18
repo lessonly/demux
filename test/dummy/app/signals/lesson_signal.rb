@@ -7,7 +7,7 @@ class LessonSignal < Demux::Signal
     {
       company_id: lesson.company_id,
       lesson: {
-        id: @object_id,
+        id: object.id,
         name: lesson.name,
         public: lesson.public
       }
@@ -18,29 +18,30 @@ class LessonSignal < Demux::Signal
     send :updated
   end
 
-  def destroyed(context = {})
-    # How do we handle cases where we need to eager create the payload
-    # Do we just send the ID of the object in a case like this
-    # Some thoughts are below
+  def destroyed_payload
+    {
+      company_id: account_id,
+      **context
+    }
+  end
 
-    # Just call the payload early and pass it into send
-    send :destroyed, payload: payload
-    # Indicate eager with boolean
-    send :destroyed, eager: true
-    # New method for sending in an eager way
-    send_now :destroyed
-    # Allow extra in the moment context to be added by the caller.
-    # We could have a base `destroyed_payload` method in here that is pretty
-    # sparse or empty and then the destroyer passes in context for the
-    # lesson that was destroyed.
-    # The concerning part here is that "what is sent" logic leaks out to the
-    # caller in this case and could be inconsistent.
-    send :destroyed, add_context: context
+  def destroyed
+    send :destroyed, context: destroyed_context
   end
 
   private
 
   def lesson
     object
+  end
+
+  def destroyed_context
+    {
+      lesson: {
+        id: lesson.id,
+        name: lesson.name,
+        public: lesson.public
+      }
+    }
   end
 end

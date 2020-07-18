@@ -10,6 +10,7 @@ class CreateDemuxTransmissions < ActiveRecord::Migration[5.2]
       t.string :response_code
       t.jsonb :response_headers
       t.text :response_body
+      t.jsonb :context
       t.jsonb :request_headers
       t.text :request_body
       t.string :request_url

@@ -33,6 +33,35 @@ module Demux
       assert_requested(reporting_post)
     end
 
+    test "sending a signal with context" do
+      lesson = lessons(:first_lesson)
+
+      slack_post = stub_request(:post, demux_apps(:slack).signal_url)
+        .with(
+          body: hash_including(
+            action: "destroyed",
+            company_id: 1,
+            lesson: {
+              id: lesson.id,
+              name: lesson.name,
+              public: lesson.public
+            }
+          ),
+          headers: {
+            "Content-Type" => "application/json",
+            "User-Agent" => "Demux",
+            "X-Demux-Signal" => "lesson",
+            "X-Demux-Signature" => /\w.+/
+          }
+        )
+      reporting_post = stub_request(:post, demux_apps(:reporting).signal_url)
+
+      LessonSignal.new(lesson, account_id: lesson.company_id).destroyed
+
+      assert_requested(slack_post)
+      assert_requested(reporting_post)
+    end
+
     test "signal times out" do
       lesson = lessons(:first_lesson)
       slack = demux_apps(:slack)

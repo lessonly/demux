@@ -118,7 +118,113 @@ A signal can contain several actions. For example, if your app subscribes to the
 
 You can define a payload used by all actions, or for a specific action. When you define a method called "payload" this method will be used by all actions that don't have an action specific payload defined. If you wish, you can define an action specific payload by defining a method with the action name followed by `_payload`. As an example, see the create specific payload defined in the `create_payload` method in the example.
 
-Inside the signal class, you will have access to the instance variable `@object_id` which represents the ID of the "object" of the signal (Lesson in this case). You also have access to `object` which will give you the initialized object for that ID. You can customize your signal further as you wish, for example in this signal we've created a private method to alias `object` as `lesson` and using that in our payload definitions.
+Inside the signal class, you will have access to the method `object_id` which represents the ID of the "object" of the signal (Lesson in this case). You also have access to `object` which will give you the initialized object for that ID. You can customize your signal further as you wish, for example in this signal we've created a private method to alias `object` as `lesson` and using that in our payload definitions. You also have access to the `context` method to access any context passed when the signal is sent.
+
+#### Signal Context
+
+Sometimes you'll have context for a signal that is perishable and cannot be retrieved from the database later before sending the signal. The payload methods in the signal are called only when sending a signal and will capture the state of the object at that point; context gives you a way to capture state now in an eager way. Here is an example of a signal using context:
+
+```Ruby
+class LessonSignal < Demux::Signal
+  attributes object_class: Lesson, signal_name: "lesson"
+
+  def destroyed_payload
+    {
+      company_id: account_id,
+      **context
+    }
+  end
+
+  def destroyed
+    send :destroyed, context: destroyed_context
+  end
+
+  private
+
+  def lesson
+    object
+  end
+
+  def destroyed_context
+    {
+      lesson: {
+        id: lesson.id,
+        name: lesson.name,
+        public: lesson.public
+      }
+    }
+  end
+end
+```
+
+Call this signal with a lesson object like: `LessonSignal.new(lesson, account_id: 9).destroyed`
+
+In this case, we are using context to store information on an object that has been supplied to the signal and that won't be available later (because it was destroyed). We supply the lesson object for us to pull data from instead of just an ID because this object is no longer in the database and we can retrieve it later using an ID. A private method is used to structure that context here, but its just plain old ruby so feel free to structure that how you think is best; there is nothing special about this private method.
+
+When building the payload, we'll have access to the context by calling `context` so that we can build it into the payload that will be delivered with the signal. Here we are just using a double splat to expand the context hash in it's entirety into the payload. You could also be more explicit like:
+
+```Ruby
+def destroyed_payload
+  context_lesson = context[:lesson]
+  {
+    company_id: account_id,
+    lesson: {
+      name: context_lesson[:name],
+      public: context_lesson[:public]
+    }
+  }
+end
+```
+
+The second way has the advantage of making the structure of the payload clearer, even if it is more verbose. Once again, its plain ol' Ruby so that's up to you!
+
+Another way that context can be used is to add perishable data at the time the signal is called in addition to the object data that is retrieved later. An example of this might be adding the id of the archiver when archiving an object. We will not know the ID of the archiver later if it is specific to the context in which the signal is called (unless it's save in the DB of course, but lets assume its not here).
+
+```Ruby
+class LessonSignal < Demux::Signal
+  attributes object_class: Lesson, signal_name: "lesson"
+
+  def archival_payload
+    {
+      company_id: account_id,
+      lesson: {
+        id: object.id,
+        name: lesson.name,
+        public: lesson.public
+      },
+      archivist_id: context[:archivist_id]
+    }
+  end
+
+  def archival(archivist_id:)
+    send :archival, context: { archivist_id: archivist_id }
+  end
+
+  private
+
+  def lesson
+    object
+  end
+```
+
+Here, we are accepting an argument into our action that we use to form a context we pass along with the call to send the signal. We then use it in the payload to add the archivist_id.
+
+One thing to note about adding context to a signal is that the context is factored into the "uniqueness" of a signal. If two signals are triggered with the same parameters but different values in their context, they are not considered the same and both signals will be sent. That is because the context is perishable; if the same signal happens more than once but with different context we would lose that context if we collapsed the two signals into one. As a practical example, let's take the example of the archival signal above. The following two signal calls would be considered unique and will not be de-duplicated:
+
+```Ruby
+LessonSignal.new(4, account_id: 9).archival(archivist_id: 3)
+LessonSignal.new(4, account_id: 9).archival(archivist_id: 8)
+```
+
+#### Initializing a Signal
+
+As shown in the examples above, there are two ways you can initialize a signal and you'll want to be aware of the difference and when to use one over the other. You can initialize a signal with the ID of an object to retrieve later from the database `LessonSignal.new(4, account_id: 9)` or you can initialize with the instance of an object `LessonSignal.new(lesson, account_id: 9)`.
+
+When you initialize with just an ID, this ID will be used to retrieve a model from the database with the type set in `object_type` for the signal. So in this examples case, it will try to find a `Lesson` with the ID of 4. This allows us to build a payload asynchronously in the case that we can pull the object from the DB. It also allows us to get and send only the latest version of the object when sending the signal (not just the state when the signal was called).
+
+You can also initialize using the instance of an object. If the object responds to ID, that ID will be saved to make a lookup possible later. It's also possible though that you will have an object that cannot be retrieved later, like in the `destroyed` example above. In this case, passing the object in allows us to form a context from it to pass along with send in that moment instead of later when the signal is being sent.
+
+Which is better depends on what you need for that action. Be aware though, if you don't use an ID or an object that responds to ID and that is accessible later you will not be able to use that object in the payload (only in a context).
 
 #### Custom Demuxer
 
