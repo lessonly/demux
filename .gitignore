@@ -3,6 +3,6 @@ log/*.log
 pkg/
 test/dummy/log/*.log
 test/dummy/tmp/
-vendor/bundle/
+vendor/bundle/*
 
 Gemfile.lock
