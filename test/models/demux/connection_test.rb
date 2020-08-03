@@ -11,13 +11,32 @@ module Demux
       url = connection.entry_url
       token = url.match(/token=(?<token>.*)/)[:token]
       decoded_token = JWT.decode(
-        token, app.secret, true, { algorithm: "HS256" }
+        token, app.secret, true, algorithm: "HS256"
       )
 
       assert_equal(
         connection.account_id,
         decoded_token.first["data"]["account_id"]
       )
+    end
+
+    test "#entry_url accepts extra data to pass along in payload" do
+      connection = demux_connections(:acme_slack)
+      app = demux_apps(:slack)
+
+      url = connection.entry_url(data: { user_id: 42 })
+      token = url.match(/token=(?<token>.*)/)[:token]
+      decoded_token = JWT.decode(
+        token, app.secret, true, algorithm: "HS256"
+      )
+
+      decoded_data = decoded_token.first["data"]
+
+      assert_equal(
+        connection.account_id,
+        decoded_data["account_id"]
+      )
+      assert_equal 42, decoded_data["user_id"]
     end
   end
 end

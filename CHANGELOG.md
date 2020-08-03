@@ -4,6 +4,7 @@
 - [Add the ability to configure a timeout duration](https://github.com/rreinhardt9/demux/pull/9) for sending a signal and set it to 10 seconds by default
 - [Add method for purging old transmissions](https://github.com/lessonly/demux/pull/13) This can be called periodically in the method of your choosing to remove old transmissions.
 - [Add ability to pass context to signals and use an object not just an ID for the object](https://github.com/lessonly/demux/pull/15). Important! This requires you to create your own migration to upgrade if you've run the migrations from Demux before.
+- [Add ability to pass extra data in token payload for Demux::Connection#entry_url](https://github.com/lessonly/demux/pull/18)
 
 # 0.1.0.beta / 5-29-2020
 
