@@ -16,7 +16,31 @@ A `Demux::App` represents any external application that you want to be "installa
 
 #### Demux::Connection
 
-A `Demux::Connection` ties a given `Demux::App` to an account. When you install an app on an account, you do that by creating a connection. How you do this will be up to you in our app, but you could likely have a simple controller action that creates a connection and then redirects to the entry_url.
+A `Demux::Connection` ties a given `Demux::App` to an account. When you install an app on an account, you do that by creating a connection. How you do this will be up to you in your host app, but you could likely have a simple controller action that creates a connection and then redirects to the entry_url. Here is a basic example for installing and configuring connections. It includes no authorization which should be considered for a production app.
+```Ruby
+class ConnectionsController < ApplicationController
+  # Create action for installing an app by creating a connection
+  def create
+    app = Demux::App.find(params[:app_id])
+
+    connection = app.connections.find_or_initialize_by(
+      account_id: current_account.id,
+      signals: app.signals
+    )
+
+    connection.save! if connection.new_record?
+
+    redirect_to connection.entry_url
+  end
+
+  # Configuring an existing connection between an app and an account
+  def show
+    connection = Demux::Connection.find(params[:id])
+
+    redirect_to connection.entry_url
+  end
+end
+```
 
 The entry_url specifies where to redirect the user during the installation process so they can complete app specific configuration. After creating a connection, you can call `#entry_url` on it to get an entry URL with a signed JWT. Whatever URL is provided, we will add a `token` url param to that contains a signed JWT.
 
@@ -30,6 +54,19 @@ The JWT is signed using the "secret" for the connections app and contains the fo
 ```
 
 The apps receiving the redirect to their URL should verify the JWT. It's signed using HS256. The app can use the account_id that was passed in the JWT to act on (create a new account, record, connection, whatever it needs to do at that point).
+
+If needed for your use case, extra data can be included in the entry_url payload when it's build. For example, you could include a user_id.
+
+```Ruby
+connection.entry_url(data: { user_id: 42 })
+```
+Resulting in a payload like:
+```JSON
+{
+  "data": {"account_id": <some_id>, user_id: 42},
+  "exp":123455
+}
+```
 
 ### Signals
 
