@@ -7,7 +7,7 @@ module Demux
 
     before_save :update_uniqueness_hash
 
-    enum status: %i[queued sending success failure timeout]
+    enum status: %i[queued sending success failure request_timeout]
 
     class << self
       def for_app(app_relation)
