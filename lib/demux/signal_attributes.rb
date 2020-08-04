@@ -35,8 +35,13 @@ module Demux
       }
     end
 
+    # Creates a unique hash of the signal attributes to uniquely identify this
+    # configuration by.
+    #
+    # @return [String] a sha256 hexidigest of attributes
+
     def hashed
-      Base64.strict_encode64(to_hash.to_json)
+      Digest::SHA256.hexdigest(to_hash.to_json)
     end
   end
 end
