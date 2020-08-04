@@ -59,7 +59,7 @@ module Demux
 
       self
     rescue Net::ReadTimeout, Net::OpenTimeout, Net::WriteTimeout
-      @status = :timeout
+      @status = :request_timeout
     end
 
     def request_options

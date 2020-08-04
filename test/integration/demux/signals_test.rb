@@ -96,10 +96,10 @@ module Demux
       assert_requested(reporting_post)
 
       slack_transmission = slack.transmissions.last
-      assert_equal slack_transmission.status, "timeout"
+      assert_equal slack_transmission.status, "request_timeout"
 
       reporting_transmission = reporting.transmissions.last
-      assert_equal reporting_transmission.status, "timeout"
+      assert_equal reporting_transmission.status, "request_timeout"
     end
   end
 end
