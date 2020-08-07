@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.com/lessonly/demux.svg?branch=master)](https://travis-ci.com/lessonly/demux)
 [![Inline docs](http://inch-ci.org/github/lessonly/demux.svg?branch=master)](http://inch-ci.org/github/lessonly/demux)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c614855285e9c43f198d/maintainability)](https://codeclimate.com/github/lessonly/demux/maintainability)
 
 # Demux
 
