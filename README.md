@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/lessonly/demux.svg?branch=master)](https://travis-ci.com/lessonly/demux)
+[![Inline docs](http://inch-ci.org/github/lessonly/demux.svg?branch=master)](http://inch-ci.org/github/lessonly/demux)
 
 # Demux
 
