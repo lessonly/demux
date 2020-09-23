@@ -17,10 +17,11 @@ module Demux
     validates :name, presence: true
 
     class << self
-      def listening_for(signal_name:, account_id:)
+      def listening_for(signal_name:, account_id:, account_type:)
         connections = Demux::Connection.listening_for(
           signal_name: signal_name,
-          account_id: account_id
+          account_id: account_id,
+          account_type: account_type
         )
 
         joins(:connections)
@@ -31,10 +32,10 @@ module Demux
       def without_queued_transmissions_for(signal_hash)
         joins(
           <<~SQL
-          LEFT OUTER JOIN demux_transmissions
-          ON demux_transmissions.app_id = demux_apps.id
-          AND demux_transmissions.status = 0
-          AND demux_transmissions.uniqueness_hash = '#{signal_hash}'
+            LEFT OUTER JOIN demux_transmissions
+            ON demux_transmissions.app_id = demux_apps.id
+            AND demux_transmissions.status = 0
+            AND demux_transmissions.uniqueness_hash = '#{signal_hash}'
           SQL
         )
           .where(demux_transmissions: { id: nil })
@@ -45,6 +46,23 @@ module Demux
           app.transmission_requested(signal_attributes)
         end
       end
+    end
+
+    # Does this app connect to a given account type?
+    #
+    # @example Checking for user account type string
+    #   app.account_type?("user")
+    #   => true
+    #
+    # @example Checking for user account type symbol
+    #   app.account_type?(:user)
+    #   => true
+    #
+    # @param type [String, #to_s]
+    #
+    # @return [Boolean]
+    def account_type?(type)
+      account_types.include?(type.to_s)
     end
 
     def transmission_requested(signal_attributes)

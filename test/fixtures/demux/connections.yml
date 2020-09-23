@@ -2,10 +2,18 @@
 
 acme_slack:
   account_id: 1
+  account_type: account
   signals: ["lesson"]
   app: slack
 
 acme_reporting:
   account_id: 1
+  account_type: account
   signals: ["lesson"]
   app: reporting
+
+acme_chatbot:
+  account_id: 1
+  account_type: user
+  signals: ["user_notification"]
+  app: chatbot

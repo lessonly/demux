@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class LessonSignal < Demux::Signal
-  attributes object_class: Lesson, signal_name: "lesson"
+  attributes object_class: Lesson, signal_name: "lesson", account_type: :account
 
   def payload
     {

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_21_203032) do
+ActiveRecord::Schema.define(version: 2020_05_05_201706) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 2020_07_21_203032) do
     t.string "entry_url"
     t.string "signal_url"
     t.text "signals", default: [], array: true
+    t.text "account_types", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["secret"], name: "index_demux_apps_on_secret", unique: true
@@ -30,11 +31,12 @@ ActiveRecord::Schema.define(version: 2020_07_21_203032) do
 
   create_table "demux_connections", force: :cascade do |t|
     t.integer "account_id"
+    t.string "account_type"
     t.integer "app_id"
     t.text "signals", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_demux_connections_on_account_id"
+    t.index ["account_id", "account_type"], name: "index_demux_connections_on_account_id_and_account_type"
     t.index ["app_id"], name: "index_demux_connections_on_app_id"
     t.index ["signals"], name: "index_demux_connections_on_signals", using: :gin
   end
@@ -45,6 +47,7 @@ ActiveRecord::Schema.define(version: 2020_07_21_203032) do
     t.integer "object_id"
     t.integer "app_id"
     t.integer "account_id"
+    t.string "account_type"
     t.integer "status", default: 0
     t.string "response_code"
     t.jsonb "response_headers"

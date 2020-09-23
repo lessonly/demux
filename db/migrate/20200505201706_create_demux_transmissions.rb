@@ -6,6 +6,7 @@ class CreateDemuxTransmissions < ActiveRecord::Migration[5.2]
       t.integer :object_id
       t.integer :app_id
       t.integer :account_id
+      t.string :account_type
       t.integer :status, default: 0
       t.string :response_code
       t.jsonb :response_headers
