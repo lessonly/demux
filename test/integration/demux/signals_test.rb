@@ -27,7 +27,7 @@ module Demux
         )
       reporting_post = stub_request(:post, demux_apps(:reporting).signal_url)
 
-      LessonSignal.new(lesson.id, account_id: lesson.company_id).updated
+      LessonSignal.new(lesson.id, account_id: 1).updated
 
       assert_requested(slack_post)
       assert_requested(reporting_post)

@@ -3,12 +3,18 @@
 module Demux
   # Attributes that are commonly used to identify a signal
   class SignalAttributes
-    attr_reader :account_id, :action, :context, :object_id, :signal_class
+    attr_reader :account_id,
+                :account_type,
+                :action,
+                :context,
+                :object_id,
+                :signal_class
 
     class << self
       def from_object(object)
         new(
           account_id: object.account_id,
+          account_type: object.account_type,
           action: object.action,
           context: object.context,
           object_id: object.object_id,
@@ -17,8 +23,9 @@ module Demux
       end
     end
 
-    def initialize(account_id:, action:, context:, object_id:, signal_class:)
+    def initialize(account_id:, account_type:, action:, context:, object_id:, signal_class:)
       @account_id = account_id
+      @account_type = account_type
       @action = action
       @context = Hash(context)
       @object_id = object_id
@@ -28,6 +35,7 @@ module Demux
     def to_hash
       {
         account_id: @account_id,
+        account_type: @account_type,
         action: @action,
         context: @context,
         object_id: @object_id,

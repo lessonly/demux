@@ -21,6 +21,7 @@ module Demux
       @demuxer_arguments = args
       @signal_attributes = SignalAttributes.new(**@demuxer_arguments)
       @account_id = @signal_attributes.account_id
+      @account_type = @signal_attributes.account_type
       @signal_class = @signal_attributes.signal_class
     end
 
@@ -83,7 +84,8 @@ module Demux
     def listening_apps
       Demux::App.listening_for(
         signal_name: @signal_class.constantize.signal_name,
-        account_id: @account_id
+        account_id: @account_id,
+        account_type: @account_type
       )
     end
   end

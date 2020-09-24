@@ -16,6 +16,8 @@ Demux represents external applications as `Demux::App`s. Those apps can be conne
 
 A `Demux::App` represents any external application that you want to be "installable" on an "account". It contains a `entry_url` that is used during the connecting of an app to an account.
 
+Optionally you can specify on the `Demux::App` record what kind of account types that app can connect to using the `account_types` column. You can refer to this column later when creating connections to determine the appropriate types to connect with.
+
 #### Demux::Connection
 
 A `Demux::Connection` ties a given `Demux::App` to an account. When you install an app on an account, you do that by creating a connection. How you do this will be up to you in your host app, but you could likely have a simple controller action that creates a connection and then redirects to the entry_url. Here is a basic example for installing and configuring connections. It includes no authorization which should be considered for a production app.
@@ -27,6 +29,7 @@ class ConnectionsController < ApplicationController
 
     connection = app.connections.find_or_initialize_by(
       account_id: current_account.id,
+      account_type: "user",
       signals: app.signals
     )
 
@@ -50,12 +53,12 @@ The JWT is signed using the "secret" for the connections app and contains the fo
 
 ```JSON
 {
-  "data": {"account_id": <some_id>},
+  "data": {"account_id": "<some_id>", "account_type": "<some_type>"},
   "exp":123455
 }
 ```
 
-The apps receiving the redirect to their URL should verify the JWT. It's signed using HS256. The app can use the account_id that was passed in the JWT to act on (create a new account, record, connection, whatever it needs to do at that point).
+The apps receiving the redirect to their URL should verify the JWT. It's signed using HS256. The app can use the account_id and account_type that was passed in the JWT to act on (create a new account, record, connection, whatever it needs to do at that point).
 
 If needed for your use case, extra data can be included in the entry_url payload when it's build. For example, you could include a user_id.
 
@@ -65,14 +68,14 @@ connection.entry_url(data: { user_id: 42 })
 Resulting in a payload like:
 ```JSON
 {
-  "data": {"account_id": <some_id>, user_id: 42},
+  "data": {"account_id": "<some_id>", "account_type": "<some_type>", "user_id": 42},
   "exp":123455
 }
 ```
 
 ### Signals
 
-Signals are messages that are sent to apps that are connected to an account in response to events that happen in that account. Demux acts like a switchboard making sure that any apps connected to the account where the event happened and that are listening for that signal will receive it.
+Signals are messages that are sent to apps that are connected to an account in response to events that happen in that account. Demux acts like a switchboard making sure that any apps connected to the account where the event happened and that are listening for that signal will receive it. When a signal is called, Demux will resolve that signal so that it is sent to any connections that are listening for that signal on that account ID and type.
 
 #### Configuring an App for Signals
 
@@ -93,7 +96,7 @@ Here is an example of copying signals from an app to a new connection:
 
 ```Ruby
 app = Demux::App.find(2)
-Demux::Connection.create(account_id: 4, signals: app.signals)
+Demux::Connection.create(account_id: 4, account_type: "user", signals: app.signals)
 ```
 Setting all existing connection to the signals of it's app:
 ```Ruby
@@ -110,7 +113,7 @@ Here is an example of defining a signal:
 
 ```Ruby
 class LessonSignal < Demux::Signal
-  attributes object_class: Lesson, signal_name: "lesson"
+  attributes object_class: Lesson, signal_name: "lesson", account_type: :user
 
   def payload
     {
@@ -153,6 +156,8 @@ end
 
 You signal should inherit from `Demux::Signal`. It should also define the attributes of the signal using the `attributes` method. The `object_class` key should be the class of the "object" of the signal (it will be used to retrieve the object for the payload using the object_id like `object.find(object_id)`). `signal_name` is the name that will be used when resolving which apps are listening for this signal. It should be unique to this signal.
 
+Attributes should also contain the type of account a signal is being sent for. In the example above, we're specifying that this signal is transmitted for a user account `account_type: :user`. This type should match the type of account specified in the Demux::Connection.
+
 A signal can contain several actions. For example, if your app subscribes to the "lesson" signal you we receive all actions within that signal. In this signal, we have two actions defined, "updated" and "created". The only think you have to do in the action is call `send` with the name of the action (in the future, the plan is to allow you to give extra moment in time context that can be passed to the send call).
 
 You can define a payload used by all actions, or for a specific action. When you define a method called "payload" this method will be used by all actions that don't have an action specific payload defined. If you wish, you can define an action specific payload by defining a method with the action name followed by `_payload`. As an example, see the create specific payload defined in the `create_payload` method in the example.
@@ -165,7 +170,7 @@ Sometimes you'll have context for a signal that is perishable and cannot be retr
 
 ```Ruby
 class LessonSignal < Demux::Signal
-  attributes object_class: Lesson, signal_name: "lesson"
+  attributes object_class: Lesson, signal_name: "lesson", account_type: :user
 
   def destroyed_payload
     {
@@ -221,7 +226,7 @@ Another way that context can be used is to add perishable data at the time the s
 
 ```Ruby
 class LessonSignal < Demux::Signal
-  attributes object_class: Lesson, signal_name: "lesson"
+  attributes object_class: Lesson, signal_name: "lesson", account_type: :user
 
   def archival_payload
     {
@@ -351,9 +356,9 @@ And then execute:
 $ bundle
 ```
 
-Or install it yourself as:
+Install the gem's migrations
 ```bash
-$ gem install demux
+$ rails demux:install:migrations
 ```
 
 ## Contributing

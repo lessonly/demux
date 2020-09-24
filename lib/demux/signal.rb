@@ -7,9 +7,10 @@ module Demux
     attr_reader :account_id, :context
 
     class << self
-      attr_reader :object_class, :signal_name
+      attr_reader :account_type, :object_class, :signal_name
 
       def attributes(attr)
+        @account_type = attr.fetch(:account_type)
         @object_class = attr.fetch(:object_class)
         @signal_name = attr.fetch(:signal_name)
       end
@@ -17,6 +18,13 @@ module Demux
 
     def signal_name
       self.class.signal_name
+    end
+
+    # Type of account for the give signal
+    #
+    # @return [String] account type
+    def account_type
+      self.class.account_type
     end
 
     def initialize(object_or_id,
@@ -29,6 +37,7 @@ module Demux
         @object = object_or_id
         @object_id = object.try(:id)
       end
+
       @account_id = account_id
       @context = context.symbolize_keys
       @demuxer = demuxer
@@ -51,6 +60,7 @@ module Demux
     def send(action, context: {})
       @demuxer.new(
         account_id: @account_id,
+        account_type: account_type,
         action: String(action),
         object_id: @object_id,
         context: @context.merge(context),

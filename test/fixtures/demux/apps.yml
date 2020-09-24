@@ -6,6 +6,7 @@ slack:
   secret: tokenslack
   entry_url: http://slack.example.com/connection/new
   signal_url: https://slack.example.com/hooks
+  account_types: ["account"]
 
 reporting:
   name: Reporting Engine
@@ -13,3 +14,12 @@ reporting:
   secret: tokenreporting
   entry_url: http://reportz.biz/setup
   signal_url: https://reportz.biz/webhooks
+  account_types: ["account"]
+
+chatbot:
+  name: Chatbot
+  description: Chat with your team
+  secret: tokenchat
+  entry_url: https://chatbot.co/setup
+  signal_url: https://chatbot.co/signal_receive
+  account_types: ["user"]

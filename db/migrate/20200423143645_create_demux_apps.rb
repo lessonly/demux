@@ -7,6 +7,7 @@ class CreateDemuxApps < ActiveRecord::Migration[5.1]
       t.string :entry_url
       t.string :signal_url
       t.text :signals, array:true, default: []
+      t.text :account_types, array:true, default: []
 
       t.timestamps
     end
