@@ -22,14 +22,14 @@ module Demux
 
       # Purge old transmissions
       #
-      # @param older_then [String, #to_s] updated_at date before which to
+      # @param older_than [String, #to_s] updated_at date before which to
       #   purge. It should be a valid datetime string or an
       #   object that returns one when to_s is called on it.
       #
       # @return [self]
 
-      def purge(older_then:)
-        where("updated_at < ?", older_then).destroy_all
+      def purge(older_than:)
+        where("updated_at < ?", older_than).destroy_all
       end
     end
 
