@@ -31,12 +31,9 @@ module Demux
                    account_id:,
                    context: {},
                    demuxer: Demux.config.default_demuxer)
-      if object_or_id.is_a?(Integer)
-        @object_id = object_or_id
-      else
-        @object = object_or_id
-        @object_id = object.try(:id)
-      end
+      @object = nil
+
+      initialize_object_or_id(object_or_id)
 
       @account_id = account_id
       @context = context.symbolize_keys
@@ -44,9 +41,14 @@ module Demux
     end
 
     def object
-      @object ||= if @object_id.present?
-                    self.class.object_class.find(@object_id)
-                  end
+      return @object if @object.present?
+      return nil unless @object_id.present?
+
+      @object = if @object_id.respond_to?(:each)
+                  self.class.object_class.where(id: @object_id)
+                else
+                  self.class.object_class.find(@object_id)
+                end
     end
 
     def payload_for(action)
@@ -68,6 +70,19 @@ module Demux
       ).resolve
 
       self
+    end
+
+    private
+
+    def initialize_object_or_id(object_or_id)
+      if object_or_id.is_a?(Integer)
+        @object_id = object_or_id
+      elsif object_or_id.respond_to?(:each)
+        @object_id = object_or_id.each(&:to_i)
+      else
+        @object = object_or_id
+        @object_id = object.try(:id)
+      end
     end
   end
 end
