@@ -8,6 +8,7 @@
 - [Change how signal attributes are referenced in custom demuxer](https://github.com/lessonly/demux/pull/14) This will require you to update your custom demuxer if you have one.
 - [Add support for multiple accounts](https://github.com/lessonly/demux/pull/24) Important! This requires you to create your own migration to upgrade if you've run the migrations from Demux before.
 - [Change parameter accepted by #purge](https://github.com/lessonly/demux/pull/25) from 'older_then' to 'older_than'. (breaking change) Thanks @SherSpock !
+- [Add configuration column to Demux Apps](https://github.com/lessonly/demux/pull/29) Important! This requires you to create your own migration to upgrade if you've run the migrations from Demux before.
 
 # 0.1.0.beta / 5-29-2020
 

@@ -23,8 +23,10 @@ ActiveRecord::Schema.define(version: 2020_05_05_201706) do
     t.string "signal_url"
     t.text "signals", default: [], array: true
     t.text "account_types", default: [], array: true
+    t.jsonb "configuration", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["configuration"], name: "index_demux_apps_on_configuration", using: :gin
     t.index ["secret"], name: "index_demux_apps_on_secret", unique: true
     t.index ["signals"], name: "index_demux_apps_on_signals", using: :gin
   end
