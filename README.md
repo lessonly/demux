@@ -73,6 +73,21 @@ Resulting in a payload like:
 }
 ```
 
+### Apps
+
+#### Configuring apps
+
+`Demux::App` records include a column useful for parent app metadata called `configuration`. This is a Rails jsonb column.
+
+```ruby
+app = Demux::App.find(1)
+app.configuration['publicly_available'] = true
+app.save
+
+app.configuration['publicly_available']
+=> true
+```
+
 ### Signals
 
 Signals are messages that are sent to apps that are connected to an account in response to events that happen in that account. Demux acts like a switchboard making sure that any apps connected to the account where the event happened and that are listening for that signal will receive it. When a signal is called, Demux will resolve that signal so that it is sent to any connections that are listening for that signal on that account ID and type.
