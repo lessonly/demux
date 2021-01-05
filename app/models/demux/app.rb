@@ -10,6 +10,7 @@ module Demux
 
     has_many :connections
     has_many :transmissions
+    has_many :access_keys
     has_secure_token :secret
 
     validates :entry_url, :signal_url, format: { with: URL_REGEX }
@@ -75,10 +76,17 @@ module Demux
     # @param exp [Integer] expiration of token in seconds since the epoch
     #
     # @return [String] the entry url with signed token appended
-
     def signed_entry_url(data: {}, exp: 1.minute.from_now.to_i)
       token = JWT.encode({ data: data, exp: exp }, secret, "HS256")
       "#{entry_url}?token=#{token}"
+    end
+
+    # Create a new access key for this app
+    # @see Demux::AccessKey#generate_new
+    #
+    # @return [Demux::AccessKey] the newly generated access key
+    def generate_access_key
+      access_keys.generate_new
     end
   end
 end

@@ -88,6 +88,42 @@ app.configuration['publicly_available']
 => true
 ```
 
+#### App Access Keys
+
+When a Demux::App communicates with the parent application, App access keys allow us to verify the identity of that app.
+
+To generate a new key for your app:
+
+```ruby
+app = Demux::App.find(1)
+key = app.generate_access_key
+```
+
+Calling this method will generate a new access_key associated to your app. An app can have multiple keys at the same to to allow for key rotation (updating the private key in the app to the new value before destroying the old private key).
+
+Demux does not store the private key, this will only be available on the AccessKey record when it's first created. In the example above, we could access the private key from our new access_key in this way:
+
+```ruby
+key.private_key
+=> -----BEGIN RSA PRIVATE KEY-----
+...
+```
+This is our only chance to view the private key; only the public_key will be persisted. In your parent application, you will need to provide a way to return this private key to the creator.
+
+The public key and a "fingerprint" will be persisted:
+
+```ruby
+key.public_key
+=> -----BEGIN PUBLIC KEY-----
+key.fingerprint
+=> "nTnIQ2ru5HdYKBluJty9aBRrn+474oh8lHG2vMJl8Lw="
+```
+
+This fingerprint can be used to identify an AccessKey later from a given private key. You can use the following to generate a fingerprint from a private key PEM file:
+```
+$ openssl rsa -in PATH_TO_PEM_FILE -pubout -outform DER | openssl sha256 -binary | openssl base64
+```
+
 ### Signals
 
 Signals are messages that are sent to apps that are connected to an account in response to events that happen in that account. Demux acts like a switchboard making sure that any apps connected to the account where the event happened and that are listening for that signal will receive it. When a signal is called, Demux will resolve that signal so that it is sent to any connections that are listening for that signal on that account ID and type.

@@ -28,5 +28,15 @@ module Demux
 
       refute app.account_type?("user")
     end
+
+    test "generating a new access key" do
+      app = demux_apps(:slack)
+      key = app.generate_access_key
+
+      assert_match(/BEGIN PUBLIC KEY/, key.public_key)
+      assert_match(/BEGIN RSA PRIVATE KEY/, key.private_key)
+      assert_match(/SHA256:/, key.fingerprint)
+      assert_equal key.app_id, app.id
+    end
   end
 end
