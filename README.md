@@ -431,7 +431,7 @@ Here are some tips on good commit messages:
 
 ## Current Maintainers
 
-- Ross @rreinhardt9
+- Ross [@rreinhardt9](https://github.com/rreinhardt9)
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
