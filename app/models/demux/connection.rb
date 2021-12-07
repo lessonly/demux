@@ -37,7 +37,7 @@ module Demux
       #
       # @return [ActiveRecord::Relation<Demux::Connection>]
       def find_by_app_indicator(indicator:, account_id:, account_type:)
-        where(
+        find_by(
           app: Demux::App.where(indicator: indicator),
           account_id: account_id,
           account_type: account_type
