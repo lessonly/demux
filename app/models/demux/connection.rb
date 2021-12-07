@@ -31,6 +31,19 @@ module Demux
         where("demux_connections.signals @> ?", "{#{signal}}")
       end
 
+      # Find connections that belong to an app with a specific indicator
+      #
+      # @param indicator [String] name of the indicator
+      #
+      # @return [ActiveRecord::Relation<Demux::Connection>]
+      def find_by_app_indicator(indicator:, account_id:, account_type:)
+        where(
+          app: Demux::App.where(indicator: indicator),
+          account_id: account_id,
+          account_type: account_type
+        )
+      end
+
       private
 
       def wildcard_signal
