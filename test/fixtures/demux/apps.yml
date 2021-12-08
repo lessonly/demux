@@ -23,3 +23,9 @@ chatbot:
   entry_url: https://chatbot.co/setup
   signal_url: https://chatbot.co/signal_receive
   account_types: ["user"]
+
+indicatio:
+  name: Indicat.io
+  description: Indicate your world
+  account_types: ["company"]
+  indicator: indicatio

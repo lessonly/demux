@@ -17,3 +17,8 @@ acme_chatbot:
   account_type: user
   signals: ["user_notification"]
   app: chatbot
+
+acme_indicatio:
+  account_id: 1
+  account_type: company
+  app: indicatio

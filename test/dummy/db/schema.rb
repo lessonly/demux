@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_05_192025) do
+ActiveRecord::Schema.define(version: 2021_12_07_035653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 2021_01_05_192025) do
     t.jsonb "configuration", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "indicator"
     t.index ["configuration"], name: "index_demux_apps_on_configuration", using: :gin
     t.index ["secret"], name: "index_demux_apps_on_secret", unique: true
     t.index ["signals"], name: "index_demux_apps_on_signals", using: :gin

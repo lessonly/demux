@@ -28,6 +28,16 @@ module Demux
       )
     end
 
+    test "::find_by_app_indicator returns connection based on account and indicator" do
+      result = Connection.find_by_app_indicator(
+        indicator: "indicatio",
+        account_id: demux_connections(:acme_indicatio).account_id,
+        account_type: "company"
+      )
+
+      assert_equal demux_connections(:acme_indicatio), result
+    end
+
     test "#entry_url requests a app entry url with account_id as payload" do
       connection = demux_connections(:acme_slack)
       app = demux_apps(:slack)

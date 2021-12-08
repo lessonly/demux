@@ -16,6 +16,7 @@ module Demux
     validates :entry_url, :signal_url, format: { with: URL_REGEX }
 
     validates :name, presence: true
+    validates :indicator, uniqueness: true, allow_blank: true
 
     class << self
       def listening_for(signal_name:, account_id:, account_type:)
