@@ -14,4 +14,4 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
-gem "rails", "~> 5.1"
+gem "rails", ">= 5.1"
