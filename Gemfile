@@ -15,3 +15,9 @@ gemspec
 # gem 'byebug', group: [:development, :test]
 
 gem "rails", ">= 5.1"
+
+# Test harness only: the dummy app uses Sprockets, which Rails 7+ no longer installs by default.
+gem "sprockets-rails"
+
+# rubocop resolves json 3, which dropped the quirks_mode option that ActiveSupport 8.0 still passes.
+gem "json", "< 3"
